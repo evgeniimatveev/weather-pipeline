@@ -34,9 +34,23 @@ Production-grade live weather pipeline for **20 global cities across 6 continent
 </details>
 
 <details>
+<summary>🏙️ Current Conditions — All 20 Cities</summary>
+
+![City Cards](assets/city_cards.png)
+
+</details>
+
+<details>
 <summary>📅 7-Day Forecast Tab</summary>
 
 ![Forecast](assets/trends.png)
+
+</details>
+
+<details>
+<summary>😊 Temperature Trends & Comfort Index</summary>
+
+![Comfort](assets/comfort.png)
 
 </details>
 

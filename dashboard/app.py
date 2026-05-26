@@ -312,7 +312,7 @@ with left2:
         "precipitation_prob_pct": "Precip % Risk",
         "wind_gusts_kmh": "Wind Gusts km/h",
         "uv_index": "UV Index",
-    })
+    }).round(1)
     st.dataframe(
         df_sev.style.background_gradient(subset=["Severity (1–10)"], cmap="YlOrRd"),
         use_container_width=True, hide_index=True,
