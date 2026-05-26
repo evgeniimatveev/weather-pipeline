@@ -7,6 +7,8 @@
 ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2×/day-2088FF?logo=githubactions&logoColor=white)
 [![HuggingFace](https://img.shields.io/badge/🤗_HuggingFace-Spaces-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/spaces/evgeniimatveevusa/weather-pipeline)
 
+![Banner](assets/weather_banner_v1.png)
+
 Production-grade live weather pipeline for **10 major US cities** — from API ingestion to engineered features, DuckDB storage, and a real-time Streamlit dashboard. Refreshed automatically **twice a day** via GitHub Actions.
 
 > "Built an end-to-end data engineering pipeline with zero manual steps: API → transform → store → visualize → automate."
