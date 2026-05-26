@@ -1,0 +1,3 @@
+# Local Airflow dev only — not used in GitHub Actions or HF Space
+-r requirements.txt
+apache-airflow>=2.9.0
