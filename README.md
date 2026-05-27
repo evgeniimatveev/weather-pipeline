@@ -325,19 +325,6 @@ weather-pipeline/
 
 ---
 
-## Skills Demonstrated
-
-- **Data Engineering** — API ingestion pipeline, run-based append pattern, audit logging, multi-table schema design
-- **Feature Engineering** — custom analytical metrics (comfort, severity, best city composite, 7d delta, anomaly detection)
-- **Data Quality** — automated validation layer with null/range/count rules, status badges per run
-- **SQL** — window functions (`ROW_NUMBER`, `PARTITION BY`), date arithmetic, CTEs, 4-table DuckDB schema
-- **Python** — modular ETL (extract / transform / validate / load), UUID run tracking, `zoneinfo` for local time
-- **Automation** — GitHub Actions cron pipeline with secrets management
-- **DevOps** — Docker containerization, HuggingFace Spaces deployment, DB sync via HF Dataset
-- **Visualization** — Streamlit multi-section dashboard, Plotly world map, forecast charts, styled dataframes
-
----
-
 ## Availability
 
 | Layer | Detail |
