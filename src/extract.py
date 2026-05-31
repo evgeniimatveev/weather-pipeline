@@ -116,16 +116,26 @@ def _fetch_forecast(city: str, lat: float, lon: float, tz: str) -> list[dict]:
 
 def extract_all() -> pd.DataFrame:
     records = []
+    skipped = []
     for city, coords in CITIES.items():
-        record = _fetch_city(city, coords["lat"], coords["lon"], coords["tz"])
-        records.append(record)
-        f = record["temperature_c"] * 9 / 5 + 32
-        print(f"  + {city}: {f:.1f}°F ({record['temperature_c']}°C)  [{record['local_time']} local]")
+        try:
+            record = _fetch_city(city, coords["lat"], coords["lon"], coords["tz"])
+            records.append(record)
+            f = record["temperature_c"] * 9 / 5 + 32
+            print(f"  + {city}: {f:.1f}°F ({record['temperature_c']}°C)  [{record['local_time']} local]")
+        except Exception as e:
+            skipped.append(city)
+            print(f"  ! {city}: SKIP after 3 retries — {type(e).__name__}")
+    if skipped:
+        print(f"  Warning: {len(skipped)} cities skipped: {', '.join(skipped)}")
     return pd.DataFrame(records)
 
 
 def extract_forecast() -> pd.DataFrame:
     rows = []
     for city, coords in CITIES.items():
-        rows.extend(_fetch_forecast(city, coords["lat"], coords["lon"], coords["tz"]))
+        try:
+            rows.extend(_fetch_forecast(city, coords["lat"], coords["lon"], coords["tz"]))
+        except Exception as e:
+            print(f"  ! {city} forecast: SKIP — {type(e).__name__}")
     return pd.DataFrame(rows)
