@@ -2,6 +2,7 @@ import httpx
 import pandas as pd
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
 CITIES = {
     # US
@@ -46,11 +47,17 @@ def _local_time(tz: str) -> str:
     return datetime.now(ZoneInfo(tz)).strftime("%H:%M")
 
 
+@retry(
+    retry=retry_if_exception_type((httpx.TimeoutException, httpx.ConnectError)),
+    stop=stop_after_attempt(3),
+    wait=wait_exponential(multiplier=1, min=2, max=10),
+    reraise=True,
+)
 def _fetch_city(city: str, lat: float, lon: float, tz: str) -> dict:
     resp = httpx.get(
         _BASE_URL,
         params={"latitude": lat, "longitude": lon, "current": _CURRENT_VARS, "timezone": tz},
-        timeout=15,
+        timeout=20,
     )
     resp.raise_for_status()
     cur = resp.json()["current"]
@@ -72,6 +79,12 @@ def _fetch_city(city: str, lat: float, lon: float, tz: str) -> dict:
     }
 
 
+@retry(
+    retry=retry_if_exception_type((httpx.TimeoutException, httpx.ConnectError)),
+    stop=stop_after_attempt(3),
+    wait=wait_exponential(multiplier=1, min=2, max=10),
+    reraise=True,
+)
 def _fetch_forecast(city: str, lat: float, lon: float, tz: str) -> list[dict]:
     resp = httpx.get(
         _BASE_URL,
@@ -79,7 +92,7 @@ def _fetch_forecast(city: str, lat: float, lon: float, tz: str) -> list[dict]:
             "latitude": lat, "longitude": lon,
             "daily": _DAILY_VARS, "timezone": tz, "forecast_days": 7,
         },
-        timeout=15,
+        timeout=20,
     )
     resp.raise_for_status()
     daily = resp.json()["daily"]
