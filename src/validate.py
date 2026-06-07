@@ -31,8 +31,8 @@ def validate(df: pd.DataFrame, run_id: str) -> dict:
             out_of_range += len(bad)
             issues.append(f"{col} out of [{lo},{hi}]: {bad['city'].tolist()}")
 
-    # Row count check — 17+ acceptable given GA runner network flakiness
-    if len(df) < 17:
+    # Row count check
+    if len(df) < 20:
         issues.append(f"Expected 20 rows, got {len(df)}")
 
     status = "pass" if not issues else ("warn" if out_of_range == 0 else "fail")

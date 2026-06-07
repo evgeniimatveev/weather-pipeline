@@ -1,9 +1,8 @@
-import time
 import httpx
 import pandas as pd
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
-from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
 CITIES = {
     # US
@@ -48,18 +47,10 @@ def _local_time(tz: str) -> str:
     return datetime.now(ZoneInfo(tz)).strftime("%H:%M")
 
 
-def _is_retryable(exc: BaseException) -> bool:
-    if isinstance(exc, (httpx.TimeoutException, httpx.ConnectError, httpx.RemoteProtocolError)):
-        return True
-    if isinstance(exc, httpx.HTTPStatusError) and exc.response.status_code == 429:
-        return True
-    return False
-
-
 @retry(
-    retry=retry_if_exception(_is_retryable),
+    retry=retry_if_exception_type((httpx.TimeoutException, httpx.ConnectError)),
     stop=stop_after_attempt(3),
-    wait=wait_exponential(multiplier=1, min=5, max=30),
+    wait=wait_exponential(multiplier=1, min=2, max=10),
     reraise=True,
 )
 def _fetch_city(city: str, lat: float, lon: float, tz: str) -> dict:
@@ -69,10 +60,7 @@ def _fetch_city(city: str, lat: float, lon: float, tz: str) -> dict:
         timeout=20,
     )
     resp.raise_for_status()
-    try:
-        cur = resp.json()["current"]
-    except ValueError as e:
-        raise httpx.RemoteProtocolError(f"Non-JSON response: {e}", request=resp.request)
+    cur = resp.json()["current"]
     return {
         "city": city,
         "fetched_at": datetime.now(timezone.utc).isoformat(),
@@ -92,9 +80,9 @@ def _fetch_city(city: str, lat: float, lon: float, tz: str) -> dict:
 
 
 @retry(
-    retry=retry_if_exception(_is_retryable),
+    retry=retry_if_exception_type((httpx.TimeoutException, httpx.ConnectError)),
     stop=stop_after_attempt(3),
-    wait=wait_exponential(multiplier=1, min=5, max=30),
+    wait=wait_exponential(multiplier=1, min=2, max=10),
     reraise=True,
 )
 def _fetch_forecast(city: str, lat: float, lon: float, tz: str) -> list[dict]:
@@ -107,11 +95,7 @@ def _fetch_forecast(city: str, lat: float, lon: float, tz: str) -> list[dict]:
         timeout=20,
     )
     resp.raise_for_status()
-    try:
-        daily = resp.json()["daily"]
-    except ValueError as e:
-        raise httpx.RemoteProtocolError(f"Non-JSON response: {e}", request=resp.request)
-
+    daily = resp.json()["daily"]
     fetched_at = datetime.now(timezone.utc).isoformat()
     return [
         {
@@ -142,7 +126,6 @@ def extract_all() -> pd.DataFrame:
         except Exception as e:
             skipped.append(city)
             print(f"  ! {city}: SKIP after 3 retries — {type(e).__name__}")
-        time.sleep(0.5)
     if skipped:
         print(f"  Warning: {len(skipped)} cities skipped: {', '.join(skipped)}")
     return pd.DataFrame(records)
@@ -155,5 +138,4 @@ def extract_forecast() -> pd.DataFrame:
             rows.extend(_fetch_forecast(city, coords["lat"], coords["lon"], coords["tz"]))
         except Exception as e:
             print(f"  ! {city} forecast: SKIP — {type(e).__name__}")
-        time.sleep(0.5)
     return pd.DataFrame(rows)
