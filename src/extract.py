@@ -66,7 +66,7 @@ def _fetch_city(city: str, lat: float, lon: float, tz: str) -> dict:
     resp = httpx.get(
         _BASE_URL,
         params={"latitude": lat, "longitude": lon, "current": _CURRENT_VARS, "timezone": tz},
-        timeout=httpx.Timeout(connect=40, read=30),
+        timeout=20,
     )
     resp.raise_for_status()
     try:
@@ -104,7 +104,7 @@ def _fetch_forecast(city: str, lat: float, lon: float, tz: str) -> list[dict]:
             "latitude": lat, "longitude": lon,
             "daily": _DAILY_VARS, "timezone": tz, "forecast_days": 7,
         },
-        timeout=httpx.Timeout(connect=40, read=30),
+        timeout=20,
     )
     resp.raise_for_status()
     try:
