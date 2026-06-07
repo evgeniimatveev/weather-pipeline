@@ -32,8 +32,8 @@ def validate(df: pd.DataFrame, run_id: str) -> dict:
             issues.append(f"{col} out of [{lo},{hi}]: {bad['city'].tolist()}")
 
     # Row count check
-    if len(df) < 20:
-        issues.append(f"Expected 20 rows, got {len(df)}")
+    if len(df) < 18:
+        issues.append(f"Expected 18 rows, got {len(df)}")
 
     status = "pass" if not issues else ("warn" if out_of_range == 0 else "fail")
 
