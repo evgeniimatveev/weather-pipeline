@@ -30,6 +30,9 @@ jobs:
       - name: Run pipeline
         run: python run_pipeline.py
 
+      - name: Data Quality Summary
+        run: python scripts/validate_quality.py
+
       - name: Upload DB to HF Dataset
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
