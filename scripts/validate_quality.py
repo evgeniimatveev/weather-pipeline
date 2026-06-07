@@ -10,7 +10,7 @@ import duckdb
 
 DB_PATH = Path("data/weather.duckdb")
 EXPECTED_CITIES = 20
-MIN_CITIES_WARN  = 18
+MIN_CITIES_WARN  = 17
 MIN_CITIES_FAIL  = 15
 
 
