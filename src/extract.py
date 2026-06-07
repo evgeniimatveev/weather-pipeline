@@ -49,7 +49,7 @@ def _local_time(tz: str) -> str:
 
 
 def _is_retryable(exc: BaseException) -> bool:
-    if isinstance(exc, (httpx.TimeoutException, httpx.ConnectError)):
+    if isinstance(exc, (httpx.TimeoutException, httpx.ConnectError, httpx.RemoteProtocolError)):
         return True
     if isinstance(exc, httpx.HTTPStatusError) and exc.response.status_code == 429:
         return True
@@ -69,7 +69,10 @@ def _fetch_city(city: str, lat: float, lon: float, tz: str) -> dict:
         timeout=httpx.Timeout(connect=40, read=30),
     )
     resp.raise_for_status()
-    cur = resp.json()["current"]
+    try:
+        cur = resp.json()["current"]
+    except ValueError as e:
+        raise httpx.RemoteProtocolError(f"Non-JSON response: {e}", request=resp.request)
     return {
         "city": city,
         "fetched_at": datetime.now(timezone.utc).isoformat(),
@@ -104,7 +107,11 @@ def _fetch_forecast(city: str, lat: float, lon: float, tz: str) -> list[dict]:
         timeout=httpx.Timeout(connect=40, read=30),
     )
     resp.raise_for_status()
-    daily = resp.json()["daily"]
+    try:
+        daily = resp.json()["daily"]
+    except ValueError as e:
+        raise httpx.RemoteProtocolError(f"Non-JSON response: {e}", request=resp.request)
+
     fetched_at = datetime.now(timezone.utc).isoformat()
     return [
         {

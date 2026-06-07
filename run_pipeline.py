@@ -1,3 +1,4 @@
+import sys
 import time
 import uuid
 
@@ -16,6 +17,9 @@ def main():
 
     # Extract
     df_raw = extract_all()
+    if df_raw.empty:
+        print(f"[{run_id}] FATAL: 0 cities extracted — API unavailable")
+        sys.exit(1)
 
     # Transform
     df = transform(df_raw)
