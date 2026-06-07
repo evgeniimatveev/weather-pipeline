@@ -52,11 +52,11 @@ def main() -> None:
         LIMIT 1
     """, [run_id]).fetchone()
 
-    # Cities in the latest snapshot
+    # Cities in the latest run — join on run window instead of exact timestamp
     cities = con.execute("""
         SELECT city, temperature_c, temperature_f, comfort_index, best_city_score
         FROM weather_history
-        WHERE fetched_at = (SELECT MAX(fetched_at) FROM weather_history)
+        WHERE fetched_at >= (SELECT started_at FROM pipeline_runs ORDER BY started_at DESC LIMIT 1)
         ORDER BY best_city_score DESC NULLS LAST
     """).fetchall()
 
@@ -65,7 +65,7 @@ def main() -> None:
     # Forecast rows for latest run
     forecast_rows = con.execute("""
         SELECT COUNT(*) FROM forecast_history
-        WHERE fetched_at = (SELECT MAX(fetched_at) FROM forecast_history)
+        WHERE fetched_at >= (SELECT started_at FROM pipeline_runs ORDER BY started_at DESC LIMIT 1)
     """).fetchone()[0]
 
     # DB stats
