@@ -6,6 +6,7 @@
 ![Plotly](https://img.shields.io/badge/Plotly-6.7-3F4F75?logo=plotly&logoColor=white)
 ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2×/day-2088FF?logo=githubactions&logoColor=white)
 [![HuggingFace](https://img.shields.io/badge/🤗_HuggingFace-Spaces-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/spaces/evgeniimatveevusa/weather-pipeline)
+[![Live](https://img.shields.io/badge/Live-FF4B4B?logo=streamlit&logoColor=white&style=flat-square)](https://weather-pip-y645txqohstehewa3d3a4w.streamlit.app/)
 
 ![Banner](assets/weather_banner_v2.png)
 
@@ -13,7 +14,7 @@ Production-grade live weather pipeline for **20 global cities across 6 continent
 
 > "Built an end-to-end data engineering pipeline: API → validate → transform → store → visualize → automate. 20 cities. 4 tables. 7-day forecasts. $0 infrastructure cost."
 
-**[Live Demo → HuggingFace Spaces](https://huggingface.co/spaces/evgeniimatveevusa/weather-pipeline)**
+**[Live Demo → Streamlit Cloud](https://weather-pip-y645txqohstehewa3d3a4w.streamlit.app/)** · **[HuggingFace Spaces](https://huggingface.co/spaces/evgeniimatveevusa/weather-pipeline)**
 
 ---
 
@@ -106,8 +107,8 @@ Open-Meteo API (free · no key)
    HuggingFace Dataset (evgeniimatveevusa/weather-db)
         ↓  Streamlit reads from HF at startup
    Dashboard (8 sections · Plotly)
-        ↓  Docker
-   HuggingFace Spaces (always-on · auto-rebuild)
+        ↓
+   Streamlit Community Cloud (always-on) · HuggingFace Spaces (Docker)
         ↑
    GitHub Actions (cron 2×/day · workflow_dispatch)
 ```
@@ -155,7 +156,7 @@ This pipeline doesn't just store raw API data — it computes analytical feature
 | Dashboard | Streamlit + Plotly |
 | Containerization | Docker |
 | Automation | GitHub Actions (cron schedule) |
-| Deployment | HuggingFace Spaces (Docker SDK) |
+| Deployment | Streamlit Community Cloud · HuggingFace Spaces (Docker SDK) |
 
 ---
 
@@ -329,8 +330,8 @@ weather-pipeline/
 
 | Layer | Detail |
 |-------|--------|
-| Hosting | HuggingFace Spaces (Docker SDK) |
-| Uptime | 24/7 — HF Spaces does not sleep |
+| Hosting | Streamlit Community Cloud · HuggingFace Spaces (Docker SDK) |
+| Uptime | 24/7 — always-on |
 | Data freshness | Updated 2× daily via GitHub Actions |
 | Database | DuckDB — downloaded from HF Dataset at startup |
 | API cost | $0 — Open-Meteo is completely free |
