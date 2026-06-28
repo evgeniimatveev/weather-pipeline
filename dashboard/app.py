@@ -20,15 +20,15 @@ DB_PATH = Path("data/weather.duckdb")
 def _ensure_db():
     if DB_PATH.exists():
         return
-    repo  = os.environ.get("HF_DATASET_REPO")
-    token = os.environ.get("HF_TOKEN")
-    if not repo:
-        st.error("Set HF_DATASET_REPO env variable to load data.")
-        st.stop()
     from huggingface_hub import hf_hub_download
     DB_PATH.parent.mkdir(exist_ok=True)
-    hf_hub_download(repo_id=repo, repo_type="dataset",
-                    filename="weather.duckdb", local_dir="data", token=token)
+    hf_hub_download(
+        repo_id=os.environ.get("HF_DATASET_REPO", "evgeniimatveevusa/weather-db"),
+        repo_type="dataset",
+        filename="weather.duckdb",
+        local_dir="data",
+        token=os.environ.get("HF_TOKEN"),
+    )
 
 
 @st.cache_data(ttl=3600)
