@@ -20,15 +20,21 @@ DB_PATH = Path("data/weather.duckdb")
 def _ensure_db():
     if DB_PATH.exists():
         return
-    from huggingface_hub import hf_hub_download
-    DB_PATH.parent.mkdir(exist_ok=True)
-    hf_hub_download(
-        repo_id=os.environ.get("HF_DATASET_REPO", "evgeniimatveevusa/weather-db"),
-        repo_type="dataset",
-        filename="weather.duckdb",
-        local_dir="data",
-        token=os.environ.get("HF_TOKEN"),
+    account_id = os.environ.get("R2_ACCOUNT_ID")
+    bucket     = os.environ.get("R2_BUCKET")
+    if not account_id or not bucket:
+        st.error("Set R2_ACCOUNT_ID / R2_ACCESS_KEY_ID / R2_SECRET_ACCESS_KEY / R2_BUCKET env variables to load data.")
+        st.stop()
+    import boto3
+    client = boto3.client(
+        "s3",
+        endpoint_url=f"https://{account_id}.r2.cloudflarestorage.com",
+        aws_access_key_id=os.environ["R2_ACCESS_KEY_ID"],
+        aws_secret_access_key=os.environ["R2_SECRET_ACCESS_KEY"],
+        region_name="auto",
     )
+    DB_PATH.parent.mkdir(exist_ok=True)
+    client.download_file(bucket, "weather-pipeline/weather.duckdb", str(DB_PATH))
 
 
 @st.cache_data(ttl=3600)
